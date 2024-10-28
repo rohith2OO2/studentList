@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+</head>
+<body>
+    <h2>Register New Student</h2>
+    <form id="studentForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+        
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" required><br><br>
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+        
+        <label for="mobileNumber">Mobile Number:</label>
+        <input type="text" id="mobileNumber" name="mobileNumber" required><br><br>
+        
+        <button type="submit">Submit</button>
+    </form>
+    
+    <h2>Student List</h2>
+    <table border="1" id="studentTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Email</th>
+                <th>Mobile Number</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+
+    <script>
+        const baseUrl = "http://localhost:8080/api/studentmanagement";
+
+        
+        async function loadStudents() {
+            try {
+                const response = await fetch(`${baseUrl}/getAll`);
+                const students = await response.json();
+                
+                const tableBody = document.querySelector("#studentTable tbody");
+                tableBody.innerHTML = ""; 
+
+                students.forEach(student => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${student.id}</td>
+                        <td>${student.name}</td>
+                        <td>${student.address}</td>
+                        <td>${student.email}</td>
+                        <td>${student.mobileNumber}</td>
+                        <td><button onclick="deleteStudent(${student.id})">Delete</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                alert("Error loading students: " + error.message);
+            }
+        }
+
+        
+        document.getElementById("studentForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const studentData = {
+                name: document.getElementById("name").value,
+                address: document.getElementById("address").value,
+                email: document.getElementById("email").value,
+                mobileNumber: document.getElementById("mobileNumber").value
+            };
+
+            try {
+                const response = await fetch(`${baseUrl}/save`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(studentData)
+                });
+
+                if (response.ok) {
+                    alert("Student registered successfully!");
+                    location.reload(); 
+                } else {
+                    alert("Failed to register student: " + response.statusText);
+                }
+            } catch (error) {
+                alert("Error registering student: " + error.message);
+            }
+        });
+
+        
+        async function deleteStudent(studentId) {
+            try {
+                const response = await fetch(`${baseUrl}/delete/${studentId}`, {
+                    method: "DELETE"
+                });
+
+                if (response.ok) {
+                    alert("Student deleted successfully!");
+                    location.reload();
+                } else {
+                    alert("Failed to delete student: " + response.statusText);
+                }
+            } catch (error) {
+                alert("Error deleting student: " + error.message);
+            }
+        }
+
+        
+        window.onload = loadStudents;
+    </script>
+</body>
+</html>
