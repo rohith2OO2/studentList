@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/studentmanagement")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5500", "http://127.0.0.1:5500"})
+@CrossOrigin(origins = {"http://13.203.197.9:3000", "http://13.203.197.9:5500", "http://13.203.197.9:5500"})
 
 public class StudentController {
 
@@ -48,4 +48,5 @@ public class StudentController {
         studentService.deleteStudent(id);
     }
 }
+
 
